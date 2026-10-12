@@ -1,0 +1,1 @@
+# lean-bsp-nucleo-l552
