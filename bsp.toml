@@ -1,0 +1,35 @@
+[bsp]
+name = "nucleo-l552"
+lean_bsp_contract_version = "1.0"
+version = "0.1.0"
+description = "ST NUCLEO-L552ZE-Q board (STM32L552ZE, Cortex-M33)"
+maintainer = "sebastien.riou@pqshield.com"
+entry_point = "bsp_cli.py"
+
+[bsp.hardware]
+flash_bytes = 0x80000
+ram_bytes = 0x40000                  # SRAM1 192 KiB + SRAM2 64 KiB
+
+[bsp.build]
+backend = "custom"                   # bsp_cli.py drives the compiler; CROSS_COMPILE selects it
+requires_tools = ["arm-none-eabi-gcc", "hwbridge"]
+
+[bsp.primitives]
+uart = true                          # UART 0 is USART3, the ST-LINK virtual COM port on this board (README)
+led = true                           # 0 green (LD1), 1 blue (LD2), 2 red (LD3)
+button = true                        # 0 is the blue user button
+cpu_cycle_counter = true             # DWT CYCCNT
+cpu_frequency = true
+cache_clear = true                   # the instruction cache
+heap_usage = true
+flash_read = false
+flash_erase = false
+flash_write = false
+
+[[bsp.targets]]
+name = "cortex-m33"
+cpu = "cortex-m33"
+toolchain = "arm-none-eabi"
+cflags = ["-mcpu=cortex-m33", "-mthumb", "-mfpu=fpv5-sp-d16", "-mfloat-abi=softfp"]
+linker_fragments = ["memory.ld", "sections_head.ld", "sections_data.ld", "sections_tail.ld"]
+run_mode = "auto-after-load"

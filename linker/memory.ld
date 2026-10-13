@@ -1,0 +1,20 @@
+/* NUCLEO-L552ZE-Q memory map (STM32L552ZE, TrustZone disabled), from the STM32CubeMX-generated
+ * STM32L552ZETXQ_FLASH.ld, with the whole 512 KiB of flash (lean-ftl-stm32l5 kept the second bank
+ * out of it). The one board-specific fragment: see default.ld for how the fragments fit together.
+ * An application's own linker script may override the sizes below by assigning them again after
+ * INCLUDE memory.ld. */
+
+ENTRY(Reset_Handler)
+
+MEMORY
+{
+  RAM   (xrw) : ORIGIN = 0x20000000, LENGTH = 192K
+  RAM2  (xrw) : ORIGIN = 0x20030000, LENGTH = 64K
+  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
+}
+
+/* Highest address of the user mode stack */
+_estack = ORIGIN(RAM) + LENGTH(RAM);
+
+_Min_Heap_Size = 0x2000;   /* required amount of heap */
+_Min_Stack_Size = 0x8000;  /* required amount of stack (CubeMX's 1 KiB is tight for printf) */
