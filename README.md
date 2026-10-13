@@ -63,6 +63,7 @@ that board. On a board as it ships, either move those solder bridges or change `
 - `linker/`: `memory.ld` (this board's memory map, with the whole 512 KiB of flash), and the Cortex-M
   `sections_head/data/tail.ld` and `default.ld`, identical to the other STM32 lean-bsp BSPs'. An
   application needing its own sections copies `default.ld`.
-- `bsp.toml`, `bsp_cli.py`: what lean-bsp reads and runs.
+- `bsp.toml`, `bsp_cli.py`: what lean-bsp reads and runs. `bsp_cli.py` is this board's data on top of lean-bsp's
+  board helpers (`leanbsp.backends`), which lean-bsp runs it with.
 
 To open it in STM32CubeIDE, regenerate an IDE project from `nucleo-l552.ioc` with STM32CubeMX.
