@@ -1,6 +1,6 @@
 [bsp]
 name = "nucleo-l552"
-lean_bsp_contract_version = "1.0"
+lean_bsp_contract_version = "1.1"
 version = "0.1.0"
 description = "ST NUCLEO-L552ZE-Q board (STM32L552ZE, Cortex-M33)"
 maintainer = "sebastien.riou@pqshield.com"
