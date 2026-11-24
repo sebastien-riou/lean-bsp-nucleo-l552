@@ -1,8 +1,9 @@
 /* NVM region 0: flash bank 2, which the image never occupies (linker/memory.ld).
  *
- * The erase and program sequences are lean-ftl's target/stm32/stm32l5-accessors.c (same author,
- * Apache-2.0), bounded to the region so that the application cannot erase its own code. They go
- * straight to the flash controller (RM0438 chapter 6), interrupts masked for the whole operation:
+ * The erase and program sequences were first written for lean-ftl (same author, Apache-2.0) and
+ * now live here only. They are bounded to the region so that the application cannot erase its own
+ * code, and go straight to the flash controller (RM0438 chapter 6), interrupts masked for the whole
+ * operation:
  *  - erase: page by page (2 KiB in dual-bank mode, DBANK=1, the option bytes' default), the bank
  *    chosen from the address, SWAP_BANK taken into account;
  *  - write: double-words (8 bytes, the program unit and the ECC word), from any source alignment,
@@ -26,8 +27,24 @@
  * agrees. */
 #define BANK_SIZE  0x40000u
 #define PAGE_SIZE  0x800u
+/* The bounds can be given at build time, BSP_NVM0_BASE and BSP_NVM0_SIZE, by a build that takes
+ * these accessors without the BSP around them (a prebuilt library for this part that offers the
+ * whole flash, for instance). A lean-bsp build defines neither: the region is bank 2, as bsp.toml
+ * and the linker script say.
+ * Status 7 (single-bank mode) is returned whatever the bounds: the page size and the bank layout
+ * here are those of dual-bank mode. */
+#if defined(BSP_NVM0_BASE) != defined(BSP_NVM0_SIZE)
+#error "define both BSP_NVM0_BASE and BSP_NVM0_SIZE, or neither"
+#endif
+#ifdef BSP_NVM0_BASE
+#define NVM0_BASE  BSP_NVM0_BASE
+#define NVM0_SIZE  BSP_NVM0_SIZE
+#define NVM0_NAME  "build-time-bounds"
+#else
 #define NVM0_BASE  (0x08000000u + BANK_SIZE)
 #define NVM0_SIZE  BANK_SIZE
+#define NVM0_NAME  "bank2"
+#endif
 #define NVM0_WRITE_SIZE 8u /* a double-word */
 
 #define FLASH_KEY1 0x45670123U
@@ -148,7 +165,7 @@ static uint8_t nvm0_read(void *dst, const void *src, uintptr_t size) {
 
 const bsp_nvm_region_t bsp_nvm_regions[BSP_N_NVM_REGIONS] = {
     {
-        .name = "bank2",
+        .name = NVM0_NAME,
         .base_address = (void *)NVM0_BASE,
         .size = NVM0_SIZE,
         .page_size = PAGE_SIZE,
