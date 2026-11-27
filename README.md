@@ -30,7 +30,7 @@ lbsp build-load-run --bsp nucleo-l552 --until 'hello-world done' --timeout 60
 | Cycle counter, CPU frequency | DWT `CYCCNT`, at `SystemCoreClock` |
 | Delay | busy loop on the cycle counter: works with interrupts masked |
 | Cache clear | the instruction cache invalidated (the STM32L5 has no data cache) |
-| Heap usage | growth of the heap end since the last reset, tracked in `_sbrk` (`Core/Src/sysmem.c`) |
+| Heap usage | lean-bsp's heap counter (contract 1.4), `src/bsp_heap.c`: the bytes requested from `malloc`, `calloc` and `realloc` and not freed yet, at most since the last reset. The heap itself is newlib's, grown by `_sbrk` (`Core/Src/sysmem.c`) up to the stack's reserve |
 | Reset | `NVIC_SystemReset()` |
 | `app_tick` | from `SysTick_Handler`, every millisecond |
 | `app_on_fault` | from the HardFault, MemManage, BusFault and UsageFault handlers, and from the NMI after a one-line report on UART 0, written straight to the USART: `lean-bsp: NMI, flash ECC double error, FLASH_ECCR=0x...` for a read of flash a power cut left half-programmed or half-erased (`pc` is 0). The BSP then stops: it makes test and demo firmware, and does not recover from the fault as production firmware would have to |
